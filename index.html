@@ -1,16 +1,47 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>replit</title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Accountability Coach</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  Hello world
-  <script src="script.js"></script>
-</body>
+    <header>
+        <nav>
+            <div class="logo">AI Coach</div>
+            <ul>
+                <li><a href="#settings">Settings</a></li>
+                <li><a href="#logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <nav class="sidebar">
+            <h2>Goals & Habits</h2>
+            <ul id="goalsList">
+                <!-- Goals will be listed here -->
+            </ul>
+            <button id="addGoal">Add Goal</button>
+        </nav>
+        <div class="main-content">
+            <div class="chat-window">
+                <div id="chatMessages">
+                    <!-- Messages will appear here -->
+                </div>
+                <input type="text" id="chatInput" placeholder="Type a message...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
 
+    
+    <!-- This is the script for firebase (according to grok) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    
+    <script src="script.js"></script>
+    
+</body>
 </html>
