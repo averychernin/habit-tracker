@@ -12,6 +12,38 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
+
+// Dialogflow setup code
+const dialogflow = require('@google-cloud/dialogflow');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+
+// Load the environment variables
+require('dotenv').config();
+
+// Your Google Cloud Project ID
+const projectId = 'habit-tracker-448801';
+
+// Use the environment variable to get the path
+const credentialsPath = process.env.DIALOGFLOW_CREDENTIALS_PATH;
+
+// Check if the environment variable is set
+if (!credentialsPath) {
+    console.error('DIALOGFLOW_CREDENTIALS_PATH environment variable is not set');
+    process.exit(1);
+}
+
+// Generate a dynamic session ID
+const sessionId = uuidv4();
+
+// Create a new session
+const sessionClient = new dialogflow.SessionsClient({
+    keyFilename: path.join(__dirname, credentialsPath)
+});
+
+const sessionPath = sessionClient.projectAgentSessionPath(projectId, sessionId);
+
+
 // Functions to add goals and habits
 function addGoal(title, description) {
     const userId = 'user1'; // Static user ID for now
