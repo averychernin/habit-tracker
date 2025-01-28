@@ -1,12 +1,15 @@
+// Load the environment variables
+require('dotenv').config();
+
 // Your web app's Firebase configuration
 var firebaseConfig = {
-    apiKey: "AIzaSyC8LtuBKM73BRVCH7U0UredY66FcMqhAnM",
-    authDomain: "habit-tracker-cd931.firebaseapp.com",
-    databaseURL: "https://habit-tracker-cd931-default-rtdb.firebaseio.com/",
-    projectId: "habit-tracker-cd931",
-    storageBucket: "habit-tracker-cd931.firebasestorage.app",
-    messagingSenderId: "493333285146",
-    appId: "1:493333285146:web:77b3526e8533a5b4b5c4a3"
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.FIREBASE_DATABASE_URL,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_APP_ID
 };
 
 // Initialize Firebase
