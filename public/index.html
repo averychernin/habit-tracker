@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Accountability Coach</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="authContainer" class="auth-container">
+        <div class="auth-box">
+            <h2>Login / Sign Up</h2>
+            <input type="email" id="emailInput" placeholder="Email">
+            <input type="password" id="passwordInput" placeholder="Password">
+            <button id="loginButton">Login</button>
+            <button id="signupButton">Sign Up</button>
+        </div>
+    </div>
+
+    <div id="mainContent" style="display: none;">
+        <header>
+            <nav>
+                <div class="logo">AI Coach</div>
+                <ul>
+                    <li><a href="#settings">Settings</a></li>
+                    <li><a href="#logout" id="logoutButton">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+        <div class="container">
+            <nav class="sidebar">
+                <h2>Goals & Habits</h2>
+                <ul id="goalsList">
+                    <!-- Goals will be listed here -->
+                </ul>
+            </nav>
+            <div class="main-content">
+                <div class="chat-window">
+                    <div id="chatMessages">
+                        <!-- Messages will appear here -->
+                    </div>
+                    <div class="input-container">
+                        <input type="text" id="chatInput" placeholder="Type a message..." style="height: 24px; max-height: 24px;">
+                        <button onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+
+    <!-- Application Code -->
+    <script src="script.js"></script>
+</body>
+</html>
