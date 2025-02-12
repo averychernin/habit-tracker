@@ -22,6 +22,7 @@ auth.onAuthStateChanged((user) => {
   
   if (user) {
     // User is signed in
+    console.log('User signed in:', user.uid);
     authContainer.style.display = 'none';
     mainContent.style.display = 'block';
     if (window.chatBot) {
@@ -29,6 +30,7 @@ auth.onAuthStateChanged((user) => {
     }
   } else {
     // No user is signed in
+    console.log('No user signed in');
     authContainer.style.display = 'flex';
     mainContent.style.display = 'none';
   }
@@ -114,11 +116,38 @@ class ChatBot {
 
     // Special handling for first response (name)
     if (this.currentContext === 'greeting') {
-      const name = input.replace(/^(i'm|my name is|i am)\s+/i, '').trim();
-      this.userData.name = name;
-      await this.displayMessage(`Nice to meet you, ${name}. To get started, please tell me a goal you'd like to accomplish or a habit you want to develop.`);
-      this.currentContext = 'goal_or_habit_choice';
-      return;
+      try {
+        // Ask Claude to extract just the name
+        const nameResponse = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            messages: [
+              { role: "user", content: input }
+            ],
+            systemPrompt: "The user is introducing themselves. Extract ONLY their name from their message, with no additional text or punctuation. For example, if they say 'Yo what's up, I'm John!' respond only with 'John'. If they say 'Hey Janus, name's Sarah J. Williams here' respond only with 'Sarah J. Williams'."
+          })
+        });
+
+        const data = await nameResponse.json();
+        const name = data.content[0].text.trim();
+        console.log('Extracted name:', name);
+        
+        this.userData.name = name;
+        await this.displayMessage(`Nice to meet you, ${name}. To get started, please tell me a goal you'd like to accomplish or a habit you want to develop.`);
+        this.currentContext = 'goal_or_habit_choice';
+        return;
+      } catch (error) {
+        console.error('Error extracting name:', error);
+        // Fallback to simpler name extraction if AI extraction fails
+        const simpleName = input.trim().split(/[.,!?]/)[0];
+        this.userData.name = simpleName;
+        await this.displayMessage(`Nice to meet you. To get started, please tell me a goal you'd like to accomplish or a habit you want to develop.`);
+        this.currentContext = 'goal_or_habit_choice';
+        return;
+      }
     }
 
     try {
@@ -169,6 +198,8 @@ Current user data: ${JSON.stringify(this.userData)}`
       
       if (data && data.content && Array.isArray(data.content) && data.content.length > 0) {
         const messageContent = data.content[0].text;
+        console.log('Processing message content:', messageContent);
+        
         this.conversationHistory.push(
           { role: "user", content: input },
           { role: "assistant", content: messageContent }
@@ -189,48 +220,68 @@ Current user data: ${JSON.stringify(this.userData)}`
   checkForGoalsAndHabits(userInput, aiResponse) {
     if (!aiResponse) return;
     
+    console.log('Checking response:', aiResponse);
+    
     if (aiResponse.toLowerCase().includes("i've added that goal") || 
         aiResponse.toLowerCase().includes("great goal!")) {
+      console.log('Goal detected, saving:', userInput);
       this.saveGoalToFirebase(userInput);
     }
     
     if (aiResponse.toLowerCase().includes("i've added that habit") || 
         aiResponse.toLowerCase().includes("great habit!")) {
+      console.log('Habit detected, saving:', userInput);
       this.saveHabitToFirebase(userInput);
     }
   }
 
   saveGoalToFirebase(goalText) {
     if (auth.currentUser) {
+      console.log('Saving goal to Firebase:', goalText);
       const goalRef = db.ref(`users/${auth.currentUser.uid}/goals`).push();
       goalRef.set({
         text: goalText,
         dateAdded: firebase.database.ServerValue.TIMESTAMP,
         completed: false
+      }).then(() => {
+        console.log('Goal saved successfully');
+        this.updateSidebar();
+      }).catch(error => {
+        console.error('Error saving goal:', error);
       });
-      this.updateSidebar();
+    } else {
+      console.error('No user signed in, cannot save goal');
     }
   }
 
   saveHabitToFirebase(habitText, associatedGoal = null) {
     if (auth.currentUser) {
+      console.log('Saving habit to Firebase:', habitText);
       const habitRef = db.ref(`users/${auth.currentUser.uid}/habits`).push();
       habitRef.set({
         text: habitText,
         associatedGoal: associatedGoal,
         dateAdded: firebase.database.ServerValue.TIMESTAMP,
         completed: false
+      }).then(() => {
+        console.log('Habit saved successfully');
+        this.updateSidebar();
+      }).catch(error => {
+        console.error('Error saving habit:', error);
       });
-      this.updateSidebar();
+    } else {
+      console.error('No user signed in, cannot save habit');
     }
   }
 
   updateSidebar() {
+    console.log('Updating sidebar...');
     const goalsList = document.getElementById('goalsList');
     goalsList.innerHTML = '';
 
     if (auth.currentUser) {
       db.ref(`users/${auth.currentUser.uid}/goals`).once('value', (snapshot) => {
+        console.log('Goals from Firebase:', snapshot.val());
         snapshot.forEach((childSnapshot) => {
           const goal = childSnapshot.val();
           const li = document.createElement('li');
@@ -240,6 +291,7 @@ Current user data: ${JSON.stringify(this.userData)}`
       });
 
       db.ref(`users/${auth.currentUser.uid}/habits`).once('value', (snapshot) => {
+        console.log('Habits from Firebase:', snapshot.val());
         snapshot.forEach((childSnapshot) => {
           const habit = childSnapshot.val();
           const li = document.createElement('li');
@@ -273,7 +325,7 @@ document.getElementById('chatInput').addEventListener('keypress', (e) => {
   }
 });
 
-// Function for send button
+// Function for the send button
 function sendMessage() {
   const chatInput = document.getElementById('chatInput');
   const message = chatInput.value.trim();

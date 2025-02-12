@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Test route
+// Test route 
 app.get('/test', (req, res) => {
     res.send('Server is running!');
 });
