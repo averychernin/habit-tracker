@@ -23,11 +23,11 @@ app.post('/api/chat', async (req, res) => {
     const { messages, systemPrompt } = req.body;
     try {
         const requestBody = {
-            model: "claude-3-haiku-20240307",
+            model: "claude-3-5-sonnet-20241022",
             max_tokens: 1024,
             temperature: 0.7,
-            system: systemPrompt,  // Move system prompt here
-            messages: messages     // Keep only the user messages here
+            system: systemPrompt,
+            messages: messages
         };
         
         console.log('Full request to Claude:', {
@@ -50,20 +50,21 @@ app.post('/api/chat', async (req, res) => {
             body: JSON.stringify(requestBody)
         });
         
-        const data = await response.json();
-        console.log('Raw Claude API response:', {
+        const responseData = await response.json();
+        
+        console.log('Complete Claude response:', JSON.stringify({
             status: response.status,
             statusText: response.statusText,
             headers: Object.fromEntries(response.headers),
-            data
-        });
+            data: responseData
+        }, null, 2));
         
         if (!response.ok) {
-            console.error('Claude API error:', data);
-            throw new Error(JSON.stringify(data));
+            console.error('Claude API error:', responseData);
+            throw new Error(JSON.stringify(responseData));
         }
         
-        res.json(data);
+        res.json(responseData);
     } catch (error) {
         console.error('Detailed error:', error);
         res.status(500).json({ 

@@ -177,6 +177,21 @@ body {
     border-bottom: none;
   }
   
+  .goal-item {
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .habit-item {
+    color: #666;
+    padding-left: 20px;
+  }
+  
+  .habit-item.standalone {
+    margin-top: 10px;
+    padding-left: 0;
+  }
+
   /* Message Styles */
   #chatMessages .message {
     margin: 10px 0;
