@@ -290,15 +290,16 @@ class ChatBot {
       
       console.log('Checking response data structure:', {
         hasData: !!data,
-        hasDataData: !!data?.data,
-        hasContent: !!data?.data?.content,
-        contentLength: data?.data?.content?.length,
-        firstContentItem: data?.data?.content?.[0],
-        hasText: !!data?.data?.content?.[0]?.text
+        hasContent: !!data?.content,
+        contentLength: data?.content?.length,
+        firstContentItem: data?.content?.[0],
+        hasText: !!data?.content?.[0]?.text
       });
 
-      if (data?.data?.content?.[0]?.text) {
-        const messageContent = data.data.content[0].text;
+      // Handle both potential response structures
+      const messageContent = data?.content?.[0]?.text || data?.data?.content?.[0]?.text;
+      
+      if (messageContent) {
         console.log('Successfully extracted message content:', messageContent);
         
         this.conversationHistory.push(
@@ -355,7 +356,7 @@ class ChatBot {
       console.log('No habit detected in response');
     }
   }
-  
+
   saveGoalToFirebase(goalText) {
     if (auth.currentUser) {
       console.log('Attempting to save goal to Firebase:', goalText);
